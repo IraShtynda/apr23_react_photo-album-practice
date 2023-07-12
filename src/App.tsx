@@ -1,9 +1,19 @@
 import React from 'react';
+import cn from 'classnames';
 import './App.scss';
+import { Photo } from './types/Photo';
 
-// import usersFromServer from './api/users';
-// import photosFromServer from './api/photos';
-// import albumsFromServer from './api/albums';
+import usersFromServer from './api/users';
+import photosFromServer from './api/photos';
+import albumsFromServer from './api/albums';
+
+const preparedPhotos: Photo[] = photosFromServer.map((photo) => {
+  const album= albumsFromServer.find(({ id }) => id === photo.albumId);
+  const user = usersFromServer.find(({ id }) => id === album?.userId)
+    || null;
+
+  return { ...photo, album, user };
+});
 
 export const App: React.FC = () => {
   return (
@@ -180,18 +190,23 @@ export const App: React.FC = () => {
             </thead>
 
             <tbody>
-              <tr>
-                <td className="has-text-weight-bold">
-                  1
-                </td>
+              {preparedPhotos.map(({album, user, ...photo}) => (
+                <tr>
+                  <td className="has-text-weight-bold">
+                    {photo.id}
+                  </td>
 
-                <td>accusamus beatae ad facilis cum similique qui sunt</td>
-                <td>quidem molestiae enim</td>
+                  <td>{photo.title}</td>
+                  <td>{album?.title}</td>
 
-                <td className="has-text-link">
-                  Max
-                </td>
-              </tr>
+                  <td className={cn({
+                    'has-text-link': user?.sex === 'm',
+                    'has-text-danger': user?.sex === 'f',
+                  })}>
+                    {user?.name}
+                  </td>
+                </tr>
+              ))}
             </tbody>
           </table>
         </div>
