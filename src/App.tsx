@@ -71,6 +71,7 @@ export const App: React.FC = () => {
   const reset = () => {
     setQuery('');
     setUserId(0);
+    setAlbumIds([]);
   };
 
   function isAlbumSelected(albumId: number) {
