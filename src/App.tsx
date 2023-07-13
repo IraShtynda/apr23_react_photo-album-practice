@@ -58,6 +58,11 @@ export const App: React.FC = () => {
     },
   );
 
+  const reset = () => {
+    setQuery('');
+    setUserId(0);
+  }
+
   return (
     <div className="section">
       <div className="container">
@@ -80,7 +85,7 @@ export const App: React.FC = () => {
 
               {usersFromServer.map(user => (
                 <a
-                  key = {user.id}
+                  key={user.id}
                   href="#/"
                   onClick={() => setUserId(user.id)}
                   className={cn({
@@ -165,7 +170,7 @@ export const App: React.FC = () => {
               <a
                 href="#/"
                 className="button is-link is-outlined is-fullwidth"
-
+                onClick={reset}
               >
                 Reset all filters
               </a>
@@ -174,86 +179,88 @@ export const App: React.FC = () => {
         </div>
 
         <div className="box table-container">
-          <p data-cy="NoMatchingMessage">
-            No photos matching selected criteria
-          </p>
+          {visiblePhotos.length === 0 ? (
+            <p data-cy="NoMatchingMessage">
+              No photos matching selected criteria
+            </p>
+          ) : (
+            <table
+              className="table is-striped is-narrow is-fullwidth"
+            >
+              <thead>
+                <tr>
+                  <th>
+                    <span className="is-flex is-flex-wrap-nowrap">
+                      ID
 
-          <table
-            className="table is-striped is-narrow is-fullwidth"
-          >
-            <thead>
-              <tr>
-                <th>
-                  <span className="is-flex is-flex-wrap-nowrap">
-                    ID
+                      <a href="#/">
+                        <span className="icon">
+                          <i data-cy="SortIcon" className="fas fa-sort" />
+                        </span>
+                      </a>
+                    </span>
+                  </th>
 
-                    <a href="#/">
-                      <span className="icon">
-                        <i data-cy="SortIcon" className="fas fa-sort" />
-                      </span>
-                    </a>
-                  </span>
-                </th>
+                  <th>
+                    <span className="is-flex is-flex-wrap-nowrap">
+                      Photo name
 
-                <th>
-                  <span className="is-flex is-flex-wrap-nowrap">
-                    Photo name
+                      <a href="#/">
+                        <span className="icon">
+                          <i className="fas fa-sort-down" />
+                        </span>
+                      </a>
+                    </span>
+                  </th>
 
-                    <a href="#/">
-                      <span className="icon">
-                        <i className="fas fa-sort-down" />
-                      </span>
-                    </a>
-                  </span>
-                </th>
+                  <th>
+                    <span className="is-flex is-flex-wrap-nowrap">
+                      Album name
 
-                <th>
-                  <span className="is-flex is-flex-wrap-nowrap">
-                    Album name
+                      <a href="#/">
+                        <span className="icon">
+                          <i className="fas fa-sort-up" />
+                        </span>
+                      </a>
+                    </span>
+                  </th>
 
-                    <a href="#/">
-                      <span className="icon">
-                        <i className="fas fa-sort-up" />
-                      </span>
-                    </a>
-                  </span>
-                </th>
+                  <th>
+                    <span className="is-flex is-flex-wrap-nowrap">
+                      User name
 
-                <th>
-                  <span className="is-flex is-flex-wrap-nowrap">
-                    User name
-
-                    <a href="#/">
-                      <span className="icon">
-                        <i className="fas fa-sort" />
-                      </span>
-                    </a>
-                  </span>
-                </th>
-              </tr>
-            </thead>
-
-            <tbody>
-              {visiblePhotos.map(({ album, user, ...photo }) => (
-                <tr key = {photo.id}>
-                  <td className="has-text-weight-bold">
-                    {photo.id}
-                  </td>
-
-                  <td>{photo.title}</td>
-                  <td>{album?.title}</td>
-
-                  <td className={cn({
-                    'has-text-link': user?.sex === 'm',
-                    'has-text-danger': user?.sex === 'f',
-                  })}
-                  >
-                    {user?.name}
-                  </td>
+                      <a href="#/">
+                        <span className="icon">
+                          <i className="fas fa-sort" />
+                        </span>
+                      </a>
+                    </span>
+                  </th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+
+              <tbody>
+                {visiblePhotos.map(({ album, user, ...photo }) => (
+                  <tr key={photo.id}>
+                    <td className="has-text-weight-bold">
+                      {photo.id}
+                    </td>
+
+                    <td>{photo.title}</td>
+                    <td>{album?.title}</td>
+
+                    <td className={cn({
+                      'has-text-link': user?.sex === 'm',
+                      'has-text-danger': user?.sex === 'f',
+                    })}
+                    >
+                      {user?.name}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
         </div>
       </div>
     </div>
