@@ -17,12 +17,14 @@ const preparedPhotos: Photo[] = photosFromServer.map((photo) => {
 
 interface FilterParams {
   userId: number;
+  query: string;
 }
 
 function getVisiblePhotos(
   products: Photo[],
   {
-    userId
+    userId,
+    query,
   }: FilterParams,
 ) {
   let visiblePhotos = [...products];
@@ -33,16 +35,26 @@ function getVisiblePhotos(
     );
   }
 
+  if (query) {
+    const normalizedQuery = query.trim().toLowerCase();
+
+    visiblePhotos = visiblePhotos.filter(
+      photo => photo.title.toLowerCase().includes(normalizedQuery),
+    );
+  }
+
   return visiblePhotos;
 }
 
 export const App: React.FC = () => {
   const [userId, setUserId] = useState(0);
+  const [query, setQuery] = useState('');
 
   const visiblePhotos = getVisiblePhotos(
     preparedPhotos,
     {
-      userId
+      userId,
+      query,
     },
   );
 
@@ -68,6 +80,7 @@ export const App: React.FC = () => {
 
               {usersFromServer.map(user => (
                 <a
+                  key = {user.id}
                   href="#/"
                   onClick={() => setUserId(user.id)}
                   className={cn({
@@ -85,20 +98,24 @@ export const App: React.FC = () => {
                   type="text"
                   className="input"
                   placeholder="Search"
-                  value="qwe"
+                  value={query}
+                  onChange={event => setQuery(event.target.value)}
                 />
 
                 <span className="icon is-left">
                   <i className="fas fa-search" aria-hidden="true" />
                 </span>
 
-                <span className="icon is-right">
-                  {/* eslint-disable-next-line jsx-a11y/control-has-associated-label */}
-                  <button
-                    type="button"
-                    className="delete"
-                  />
-                </span>
+                {query && (
+                  <span className="icon is-right">
+                    {/* eslint-disable-next-line jsx-a11y/control-has-associated-label */}
+                    <button
+                      type="button"
+                      className="delete"
+                      onClick={() => setQuery('')}
+                    />
+                  </span>
+                )}
               </p>
             </div>
 
@@ -218,7 +235,7 @@ export const App: React.FC = () => {
 
             <tbody>
               {visiblePhotos.map(({ album, user, ...photo }) => (
-                <tr>
+                <tr key = {photo.id}>
                   <td className="has-text-weight-bold">
                     {photo.id}
                   </td>
