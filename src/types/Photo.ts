@@ -1,5 +1,5 @@
-import { User } from "./User";
-import { Album } from "./Album";
+import { User } from './User';
+import { Album } from './Album';
 
 export interface Photo {
   albumId: number,

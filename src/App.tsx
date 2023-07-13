@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import cn from 'classnames';
 import './App.scss';
 import { Photo } from './types/Photo';
@@ -8,14 +8,44 @@ import photosFromServer from './api/photos';
 import albumsFromServer from './api/albums';
 
 const preparedPhotos: Photo[] = photosFromServer.map((photo) => {
-  const album= albumsFromServer.find(({ id }) => id === photo.albumId);
+  const album = albumsFromServer.find(({ id }) => id === photo.albumId);
   const user = usersFromServer.find(({ id }) => id === album?.userId)
     || null;
 
   return { ...photo, album, user };
 });
 
+interface FilterParams {
+  userId: number;
+}
+
+function getVisiblePhotos(
+  products: Photo[],
+  {
+    userId
+  }: FilterParams,
+) {
+  let visiblePhotos = [...products];
+
+  if (userId) {
+    visiblePhotos = visiblePhotos.filter(
+      photo => photo.user?.id === userId,
+    );
+  }
+
+  return visiblePhotos;
+}
+
 export const App: React.FC = () => {
+  const [userId, setUserId] = useState(0);
+
+  const visiblePhotos = getVisiblePhotos(
+    preparedPhotos,
+    {
+      userId
+    },
+  );
+
   return (
     <div className="section">
       <div className="container">
@@ -28,28 +58,25 @@ export const App: React.FC = () => {
             <p className="panel-tabs has-text-weight-bold">
               <a
                 href="#/"
+                onClick={() => setUserId(0)}
+                className={cn({
+                  'is-active': !userId,
+                })}
               >
                 All
               </a>
 
-              <a
-                href="#/"
-              >
-                User 1
-              </a>
-
-              <a
-                href="#/"
-                className="is-active"
-              >
-                User 2
-              </a>
-
-              <a
-                href="#/"
-              >
-                User 3
-              </a>
+              {usersFromServer.map(user => (
+                <a
+                  href="#/"
+                  onClick={() => setUserId(user.id)}
+                  className={cn({
+                    'is-active': userId === user.id,
+                  })}
+                >
+                  {user.name}
+                </a>
+              ))}
             </p>
 
             <div className="panel-block">
@@ -190,7 +217,7 @@ export const App: React.FC = () => {
             </thead>
 
             <tbody>
-              {preparedPhotos.map(({album, user, ...photo}) => (
+              {visiblePhotos.map(({ album, user, ...photo }) => (
                 <tr>
                   <td className="has-text-weight-bold">
                     {photo.id}
@@ -202,7 +229,8 @@ export const App: React.FC = () => {
                   <td className={cn({
                     'has-text-link': user?.sex === 'm',
                     'has-text-danger': user?.sex === 'f',
-                  })}>
+                  })}
+                  >
                     {user?.name}
                   </td>
                 </tr>
