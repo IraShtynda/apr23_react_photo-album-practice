@@ -22,14 +22,14 @@ interface FilterParams {
 }
 
 const getVisiblePhotos = (
-  products: Photo[],
+  photos: Photo[],
   {
     userId,
     query,
     albumIds,
   }: FilterParams,
 ) => {
-  let visiblePhotos = [...products];
+  let visiblePhotos = [...photos];
 
   if (userId) {
     visiblePhotos = visiblePhotos.filter(
@@ -74,7 +74,7 @@ export const App: React.FC = () => {
     setAlbumIds([]);
   };
 
-  function isAlbumSelected(albumId: number) {
+  const isAlbumSelected = (albumId: number) => {
     return albumIds.includes(albumId);
   }
 
